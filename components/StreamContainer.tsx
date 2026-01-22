@@ -72,7 +72,7 @@ const StreamContainer: React.FC<StreamContainerProps> = ({ isFakeFullscreen = fa
       
       {/* The Actual Stream Player */}
       <iframe 
-        src="https://player.kick.com/Djharrylive?autoplay=true&allowfullscreen=false" 
+        src="https://player.kick.com/Djharryvlog?autoplay=true&allowfullscreen=false" 
         className={`absolute top-0 left-0 w-full h-full transition-opacity duration-1000 ease-in-out ${
           isConnecting ? 'opacity-0 invisible' : 'opacity-100 visible'
         }`}
