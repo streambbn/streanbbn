@@ -37,7 +37,6 @@ const StreamContainer: React.FC<StreamContainerProps> = ({ isFakeFullscreen = fa
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'hidden') {
         // Immediately trigger solid black state and reset timers when minimized
-        // This stops the sequence so it stays black while hidden
         setIsConnecting(true);
         setIsCountdownActive(false);
         clearTimeout(delayTimer);
@@ -71,10 +70,7 @@ const StreamContainer: React.FC<StreamContainerProps> = ({ isFakeFullscreen = fa
         <i className="fa-solid fa-compact-disc text-4xl text-zinc-700 animate-spin"></i>
       </div>
       
-      {/* 
-          The Actual Stream 
-          - Added visibility and opacity logic to prevent any flashes of the interactive player.
-      */}
+      {/* The Actual Stream Player */}
       <iframe 
         src="https://player.kick.com/Djharryvlog?autoplay=true&allowfullscreen=false" 
         className={`absolute top-0 left-0 w-full h-full transition-opacity duration-1000 ease-in-out ${
@@ -90,7 +86,6 @@ const StreamContainer: React.FC<StreamContainerProps> = ({ isFakeFullscreen = fa
           - Covers everything underneath.
           - Solid black while connecting or minimized.
           - Transparent but still active (blocking clicks) after reveal.
-          - transition is disabled when 'isConnecting' becomes true to prevent entry flicker.
       */}
       <div 
         className={`absolute inset-0 z-20 cursor-default select-none ${
@@ -102,7 +97,7 @@ const StreamContainer: React.FC<StreamContainerProps> = ({ isFakeFullscreen = fa
         aria-hidden="true"
       ></div>
 
-      {/* Connecting UI Text & Progress Bar (Layered on top of the black blocker) */}
+      {/* Connecting UI Text & Progress Bar */}
       <div 
         className={`absolute inset-0 z-30 flex flex-col items-center justify-center transition-opacity duration-500 ${
           isConnecting ? 'opacity-100' : 'opacity-0 pointer-events-none'
@@ -134,7 +129,7 @@ const StreamContainer: React.FC<StreamContainerProps> = ({ isFakeFullscreen = fa
         </div>
       </div>
 
-      {/* Exit Button - z-50 to stay above the interaction blocker (z-20) */}
+      {/* Exit Button - only visible in fake fullscreen */}
       {isFakeFullscreen && (
         <button 
           onClick={onExitFullscreen}
