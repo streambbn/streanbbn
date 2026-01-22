@@ -71,13 +71,18 @@ const StreamContainer: React.FC<StreamContainerProps> = ({ isFakeFullscreen = fa
       </div>
       
       {/* The Actual Stream Player */}
+      {/* 
+        CRITICAL: allow="autoplay" is required for the browser to permit unmuted audio in an iframe.
+        URL corrected to Djharrylive.
+      */}
       <iframe 
-        src="https://player.kick.com/Djharryvlog?autoplay=true&allowfullscreen=false" 
+        src="https://player.kick.com/lisibrm?autoplay=true&muted=false&allowfullscreen=false" 
         className={`absolute top-0 left-0 w-full h-full transition-opacity duration-1000 ease-in-out ${
           isConnecting ? 'opacity-0 invisible' : 'opacity-100 visible'
         }`}
         frameBorder="0" 
         scrolling="no"
+        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
         allowFullScreen={true}
       />
 
