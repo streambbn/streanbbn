@@ -1,0 +1,7 @@
+{
+  "name": "VibeCast: Djharrylive Companion",
+  "description": "A high-end live streaming hub for Djharrylive featuring an integrated Gemini-powered AI companion to enhance the viewer experience.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
