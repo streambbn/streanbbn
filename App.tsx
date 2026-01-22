@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import StreamContainer from './components/StreamContainer';
+import SecurityGuard from './components/SecurityGuard';
 
 const App: React.FC = () => {
   const [isFakeFullscreen, setIsFakeFullscreen] = useState(false);
@@ -26,6 +27,8 @@ const App: React.FC = () => {
 
   return (
     <div className={`min-h-screen flex flex-col bg-[#09090b] ${isFakeFullscreen ? 'overflow-hidden' : ''}`}>
+      <SecurityGuard />
+      
       {/* Navbar - Hidden in fake fullscreen */}
       {!isFakeFullscreen && (
         <nav className="h-16 border-b border-zinc-800 px-4 md:px-8 flex items-center justify-between sticky top-0 bg-[#09090b]/80 backdrop-blur-md z-50">
