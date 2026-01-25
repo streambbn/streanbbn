@@ -47,19 +47,20 @@ const App: React.FC = () => {
           allowFakeFullscreen={true}
         />
 
-        {/* FEED 2: TAKE FROM (OPEN) */}
+        {/* FEED 2: TAKE FROM (CONTROLS ONLY - AS REQUESTED) */}
         <StreamContainer 
-          title="Secondary Feed" 
-          subtitle="Auxiliary Visual Monitoring // Node Gamma"
+          title="Remote Control Interface" 
+          subtitle="Interactive Signal Modulator // Node Gamma"
           channel="takefrom"
           accentColor="blue"
+          isControlsOnly={true}
         />
 
         {/* INFO GRID */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-12">
           {[
             { icon: 'fa-lock', title: 'Interaction Lock', desc: 'Secure view-only mode prevents accidental player interference.' },
-            { icon: 'fa-maximize', title: 'Theater Mode', desc: 'Immersive windowed fullscreen for focused monitoring.' },
+            { icon: 'fa-sliders', title: 'Isolated Controls', desc: 'Direct access to player functions without video distraction.' },
             { icon: 'fa-infinity', title: 'Always Live', desc: 'Auto-reconnection logic handled by host servers.' }
           ].map((feature, i) => (
             <div key={i} className="p-8 bg-zinc-900/40 border border-zinc-800/50 rounded-[2rem] hover:bg-zinc-900/60 transition-all group">

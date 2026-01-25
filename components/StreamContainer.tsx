@@ -8,6 +8,7 @@ interface StreamContainerProps {
   accentColor?: string;
   isLocked?: boolean; // If true, adds invisible interaction layer
   allowFakeFullscreen?: boolean; // If true, enables the expand button
+  isControlsOnly?: boolean; // If true, crops to show only the bottom controls
 }
 
 const StreamContainer: React.FC<StreamContainerProps> = ({ 
@@ -16,7 +17,8 @@ const StreamContainer: React.FC<StreamContainerProps> = ({
   subtitle = "Direct Kick.com Integration",
   accentColor = "purple",
   isLocked = false,
-  allowFakeFullscreen = false
+  allowFakeFullscreen = false,
+  isControlsOnly = false
 }) => {
   const [isFakeFullscreen, setIsFakeFullscreen] = useState(false);
   const embedUrl = `https://player.kick.com/${channel}?autoplay=true&muted=false`;
@@ -41,12 +43,14 @@ const StreamContainer: React.FC<StreamContainerProps> = ({
 
   const playerClasses = isFakeFullscreen
     ? "relative w-full h-full overflow-hidden bg-black"
-    : "relative aspect-video rounded-[2rem] overflow-hidden bg-black border border-white/5 shadow-2xl ring-1 ring-white/10 group-hover:ring-white/20 transition-all duration-500";
+    : isControlsOnly 
+        ? "relative h-[85px] rounded-2xl overflow-hidden bg-black border border-white/10 shadow-lg ring-1 ring-white/10 group-hover:ring-white/20 transition-all duration-300"
+        : "relative aspect-video rounded-[2rem] overflow-hidden bg-black border border-white/5 shadow-2xl ring-1 ring-white/10 group-hover:ring-white/20 transition-all duration-500";
 
   return (
     <div className={containerClasses}>
-      {/* HEADER (Only show in normal mode) */}
-      {!isFakeFullscreen ? (
+      {/* HEADER (Only show in normal mode and not in controls-only mode) */}
+      {!isFakeFullscreen && !isControlsOnly && (
         <div className="flex justify-between items-end px-2 w-full">
           <div>
             <h3 className="text-xl font-black uppercase italic tracking-tighter">
@@ -70,7 +74,20 @@ const StreamContainer: React.FC<StreamContainerProps> = ({
              </div>
           </div>
         </div>
-      ) : (
+      )}
+
+      {/* HEADER FOR CONTROLS-ONLY MODE */}
+      {isControlsOnly && !isFakeFullscreen && (
+        <div className="flex justify-between items-center px-4 w-full">
+           <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+              <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Signal Controller: {channel}</span>
+           </div>
+           <span className="text-[8px] font-bold uppercase tracking-[0.3em] text-zinc-600 italic">Restricted Access // Controls Only</span>
+        </div>
+      )}
+
+      {isFakeFullscreen && (
         /* Floating Exit Button in FS - Visible on Hover or persistent */
         <div className="absolute top-6 right-6 z-[110] flex gap-3 opacity-0 hover:opacity-100 transition-opacity duration-300">
           <div className="bg-black/40 backdrop-blur-md border border-white/10 px-4 py-2 rounded-xl hidden md:flex items-center">
@@ -98,12 +115,12 @@ const StreamContainer: React.FC<StreamContainerProps> = ({
       <div className={playerClasses}>
         <iframe
           src={embedUrl}
-          className="w-full h-full border-0"
+          className={`w-full border-0 ${isControlsOnly && !isFakeFullscreen ? 'absolute bottom-0 h-[450px]' : 'h-full'}`}
           allowFullScreen={true}
           scrolling="no"
         />
 
-        {/* INVISIBLE INTERACTION LAYER */}
+        {/* INVISIBLE INTERACTION LAYER (Only if locked) */}
         {isLocked && (
           <div 
             className="absolute inset-0 z-20 bg-transparent cursor-default"
@@ -111,19 +128,30 @@ const StreamContainer: React.FC<StreamContainerProps> = ({
           />
         )}
 
-        {/* OVERLAYS - Hide in fullscreen to keep it clean unless hovered */}
-        <div className={`absolute top-6 left-6 pointer-events-none z-30 ${isFakeFullscreen ? 'opacity-0' : 'opacity-100'}`}>
-           <div className="bg-black/60 backdrop-blur-xl border border-white/10 px-3 py-1.5 rounded-xl flex items-center gap-2">
-              <div className="relative flex h-1.5 w-1.5">
-                <span className={`animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75`}></span>
-                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-600"></span>
-              </div>
-              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/80">Live Signal</span>
-           </div>
-        </div>
+        {/* CONTROLS BLOCKER: Improved to hide Kick Logo and Fullscreen buttons */}
+        {isControlsOnly && !isFakeFullscreen && (
+          <div className="absolute bottom-0 right-0 z-40">
+            {/* Blocker for Kick Logo, Settings, and Fullscreen button */}
+            {/* Increased dimensions to ensure coverage based on user feedback */}
+            <div className="bg-black h-[70px] w-[180px] pointer-events-auto shadow-[-20px_0_40px_rgba(0,0,0,1)]" title="Restricted Control Zone"></div>
+          </div>
+        )}
+
+        {/* OVERLAYS - Hide in fullscreen or controls-only to keep it clean */}
+        {!isFakeFullscreen && !isControlsOnly && (
+          <div className="absolute top-6 left-6 pointer-events-none z-30">
+            <div className="bg-black/60 backdrop-blur-xl border border-white/10 px-3 py-1.5 rounded-xl flex items-center gap-2">
+                <div className="relative flex h-1.5 w-1.5">
+                  <span className={`animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75`}></span>
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-600"></span>
+                </div>
+                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/80">Live Signal</span>
+            </div>
+          </div>
+        )}
 
         {/* LOCK INDICATOR */}
-        {isLocked && !isFakeFullscreen && (
+        {isLocked && !isFakeFullscreen && !isControlsOnly && (
           <div className="absolute bottom-6 right-6 pointer-events-none z-30 opacity-0 group-hover:opacity-100 transition-opacity">
             <div className="bg-black/60 backdrop-blur-md border border-white/10 p-2 rounded-lg text-zinc-400">
               <i className="fa-solid fa-lock text-[10px]"></i>
@@ -132,7 +160,7 @@ const StreamContainer: React.FC<StreamContainerProps> = ({
         )}
       </div>
       
-      {!isFakeFullscreen && (
+      {!isFakeFullscreen && !isControlsOnly && (
         <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest px-2 italic">
           {isLocked ? "* User interaction locked for this node." : "* Click to unmute if necessary."}
         </p>
