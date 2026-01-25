@@ -37,15 +37,17 @@ const App: React.FC = () => {
           </p>
         </header>
 
-        {/* FEED 1: TAKE FROM */}
+        {/* FEED 1: TAKE FROM (LOCKED & THEATER MODE) */}
         <StreamContainer 
           title="Primary Stream" 
-          subtitle="Main Intelligence Feed // Node Alpha"
+          subtitle="Main Intelligence Feed // Node Alpha (LOCKED)"
           channel="takefrom"
           accentColor="purple"
+          isLocked={true}
+          allowFakeFullscreen={true}
         />
 
-        {/* FEED 2: TAKE FROM (REPLACED AUDIO55) */}
+        {/* FEED 2: TAKE FROM (OPEN) */}
         <StreamContainer 
           title="Secondary Feed" 
           subtitle="Auxiliary Visual Monitoring // Node Gamma"
@@ -56,8 +58,8 @@ const App: React.FC = () => {
         {/* INFO GRID */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-12">
           {[
-            { icon: 'fa-gauge-high', title: 'Stable Embed', desc: 'Direct Kick.com integration for native reliability.' },
-            { icon: 'fa-shield-halved', title: 'Secure Relay', desc: 'Sandboxed iframe implementation for viewer safety.' },
+            { icon: 'fa-lock', title: 'Interaction Lock', desc: 'Secure view-only mode prevents accidental player interference.' },
+            { icon: 'fa-maximize', title: 'Theater Mode', desc: 'Immersive windowed fullscreen for focused monitoring.' },
             { icon: 'fa-infinity', title: 'Always Live', desc: 'Auto-reconnection logic handled by host servers.' }
           ].map((feature, i) => (
             <div key={i} className="p-8 bg-zinc-900/40 border border-zinc-800/50 rounded-[2rem] hover:bg-zinc-900/60 transition-all group">
