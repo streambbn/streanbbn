@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface StreamContainerProps {
   channel: string;
@@ -21,20 +21,31 @@ const StreamContainer: React.FC<StreamContainerProps> = ({
   const [isFakeFullscreen, setIsFakeFullscreen] = useState(false);
   const embedUrl = `https://player.kick.com/${channel}?autoplay=true&muted=false`;
 
+  // Lock scroll when fake fullscreen is active
+  useEffect(() => {
+    if (isFakeFullscreen) {
+      const originalStyle = window.getComputedStyle(document.body).overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalStyle;
+      };
+    }
+  }, [isFakeFullscreen]);
+
   const toggleFullscreen = () => setIsFakeFullscreen(!isFakeFullscreen);
 
   // Styling for the container based on fullscreen state
   const containerClasses = isFakeFullscreen 
-    ? "fixed inset-0 z-[100] bg-black p-4 flex flex-col items-center justify-center animate-in fade-in zoom-in-95 duration-300"
+    ? "fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center animate-in fade-in zoom-in-95 duration-300"
     : "group relative w-full space-y-4";
 
   const playerClasses = isFakeFullscreen
-    ? "relative w-full h-full rounded-2xl overflow-hidden bg-black border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)]"
+    ? "relative w-full h-full overflow-hidden bg-black"
     : "relative aspect-video rounded-[2rem] overflow-hidden bg-black border border-white/5 shadow-2xl ring-1 ring-white/10 group-hover:ring-white/20 transition-all duration-500";
 
   return (
     <div className={containerClasses}>
-      {/* HEADER (Only show in normal mode or as a floating bar in FS) */}
+      {/* HEADER (Only show in normal mode) */}
       {!isFakeFullscreen ? (
         <div className="flex justify-between items-end px-2 w-full">
           <div>
@@ -60,18 +71,28 @@ const StreamContainer: React.FC<StreamContainerProps> = ({
           </div>
         </div>
       ) : (
-        /* Floating Exit Button in FS */
-        <div className="absolute top-8 right-8 z-[110] flex gap-3">
-          <div className="bg-black/40 backdrop-blur-md border border-white/10 px-4 py-2 rounded-xl">
-             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 italic">{title} // Active Feed</span>
+        /* Floating Exit Button in FS - Visible on Hover or persistent */
+        <div className="absolute top-6 right-6 z-[110] flex gap-3 opacity-0 hover:opacity-100 transition-opacity duration-300">
+          <div className="bg-black/40 backdrop-blur-md border border-white/10 px-4 py-2 rounded-xl hidden md:flex items-center">
+             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 italic">{title} // Theater Mode</span>
           </div>
           <button 
             onClick={toggleFullscreen}
-            className="w-10 h-10 bg-white text-black rounded-xl flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-2xl"
+            className="w-12 h-12 bg-white/10 hover:bg-white backdrop-blur-md text-white hover:text-black rounded-full flex items-center justify-center transition-all shadow-2xl border border-white/20"
           >
-            <i className="fa-solid fa-xmark"></i>
+            <i className="fa-solid fa-compress text-lg"></i>
           </button>
         </div>
+      )}
+
+      {/* Persistent close button for touch/visibility in FS */}
+      {isFakeFullscreen && (
+        <button 
+          onClick={toggleFullscreen}
+          className="absolute top-6 right-6 z-[110] w-10 h-10 bg-black/40 hover:bg-white backdrop-blur-md text-white hover:text-black rounded-full flex items-center justify-center md:hidden transition-all shadow-2xl border border-white/20"
+        >
+          <i className="fa-solid fa-xmark"></i>
+        </button>
       )}
 
       <div className={playerClasses}>
@@ -90,8 +111,8 @@ const StreamContainer: React.FC<StreamContainerProps> = ({
           />
         )}
 
-        {/* OVERLAYS */}
-        <div className="absolute top-6 left-6 pointer-events-none z-30">
+        {/* OVERLAYS - Hide in fullscreen to keep it clean unless hovered */}
+        <div className={`absolute top-6 left-6 pointer-events-none z-30 ${isFakeFullscreen ? 'opacity-0' : 'opacity-100'}`}>
            <div className="bg-black/60 backdrop-blur-xl border border-white/10 px-3 py-1.5 rounded-xl flex items-center gap-2">
               <div className="relative flex h-1.5 w-1.5">
                 <span className={`animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75`}></span>
