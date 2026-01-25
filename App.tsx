@@ -45,11 +45,11 @@ const App: React.FC = () => {
           accentColor="purple"
         />
 
-        {/* FEED 2: AUDIO55 */}
+        {/* FEED 2: TAKE FROM (REPLACED AUDIO55) */}
         <StreamContainer 
-          title="Audio 55" 
-          subtitle="Auxiliary Audio Monitoring // Node Gamma"
-          channel="audio55"
+          title="Secondary Feed" 
+          subtitle="Auxiliary Visual Monitoring // Node Gamma"
+          channel="takefrom"
           accentColor="blue"
         />
 
