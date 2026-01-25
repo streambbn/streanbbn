@@ -5,29 +5,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VibeCast</title>
-    <!-- Tailwind Play CDN - Note: Throws a warning in console but works for rapid prototyping -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
-            background-color: #09090b;
+            background-color: #050507;
             color: #fafafa;
         }
         ::-webkit-scrollbar {
             width: 6px;
         }
         ::-webkit-scrollbar-track {
-            background: #18181b;
+            background: #09090b;
         }
         ::-webkit-scrollbar-thumb {
-            background: #3f3f46;
+            background: #27272a;
             border-radius: 10px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #52525b;
-        }
-        .neon-glow {
-            text-shadow: 0 0 10px rgba(168, 85, 247, 0.5), 0 0 20px rgba(168, 85, 247, 0.3);
+            background: #3f3f46;
         }
     </style>
 <script type="importmap">
@@ -36,14 +32,14 @@
     "@google/genai": "https://esm.sh/@google/genai@^1.37.0",
     "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
     "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3"
+    "react": "https://esm.sh/react@^19.2.3",
+    "hls.js": "https://esm.sh/hls.js@1.5.17"
   }
 }
 </script>
 </head>
 <body>
     <div id="root"></div>
-    <!-- Explicitly load index.tsx as a module to fix blank screen issues -->
     <script type="module" src="index.tsx"></script>
 </body>
 </html>

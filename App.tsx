@@ -1,96 +1,77 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import StreamContainer from './components/StreamContainer';
 
 const App: React.FC = () => {
-  const [isFakeFullscreen, setIsFakeFullscreen] = useState(false);
-
-  // Handle mobile orientation changes for automatic fake fullscreen
-  useEffect(() => {
-    const handleOrientationChange = () => {
-      // If we rotate to landscape on a mobile-sized device, enter fake fullscreen
-      if (window.innerWidth < 1024) {
-        if (window.orientation === 90 || window.orientation === -90) {
-          setIsFakeFullscreen(true);
-        } else {
-          setIsFakeFullscreen(false);
-        }
-      }
-    };
-
-    window.addEventListener('orientationchange', handleOrientationChange);
-    return () => window.removeEventListener('orientationchange', handleOrientationChange);
-  }, []);
-
-  const toggleFakeFullscreen = () => setIsFakeFullscreen(!isFakeFullscreen);
-
   return (
-    <div className={`min-h-screen flex flex-col bg-[#09090b] ${isFakeFullscreen ? 'overflow-hidden' : ''}`}>
-      {/* Navbar - Hidden in fake fullscreen */}
-      {!isFakeFullscreen && (
-        <nav className="h-16 border-b border-zinc-800 px-4 md:px-8 flex items-center justify-between sticky top-0 bg-[#09090b]/80 backdrop-blur-md z-50">
-          <div className="flex items-center gap-3">
-            <div className="bg-purple-600 p-2 rounded-lg shadow-[0_0_15px_rgba(168,85,247,0.4)]">
-              <i className="fa-solid fa-music text-white"></i>
-            </div>
-            <span className="font-black text-xl tracking-tighter uppercase neon-glow">VibeCast</span>
+    <div className="min-h-screen bg-[#050507] text-zinc-100 selection:bg-purple-500/30">
+      {/* HEADER */}
+      <nav className="fixed top-0 w-full z-50 border-b border-white/5 bg-black/50 backdrop-blur-xl px-6 py-4 flex justify-between items-center">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
+            <i className="fa-solid fa-bolt-lightning text-white text-sm"></i>
           </div>
-          
-          <div className="hidden md:flex items-center gap-6 text-sm font-medium text-zinc-400">
-            <a href="#" className="hover:text-purple-400 transition-colors text-zinc-100">Live Stream</a>
-            <a href="#" className="hover:text-purple-400 transition-colors">Schedule</a>
-          </div>
+          <h1 className="text-xl font-black tracking-tighter uppercase italic">
+            Vibe<span className="text-purple-500">Cast</span>
+          </h1>
+        </div>
+        <div className="hidden md:flex items-center gap-6">
+           <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 hover:text-white cursor-pointer transition-colors">Network</span>
+           <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 hover:text-white cursor-pointer transition-colors">Satellites</span>
+           <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 hover:text-white cursor-pointer transition-colors">Status</span>
+        </div>
+      </nav>
 
-          <div className="flex items-center gap-4">
-            <button className="bg-zinc-800 hover:bg-zinc-700 text-zinc-100 px-4 py-2 rounded-full text-xs font-bold transition-all border border-zinc-700">
-              Sign In
-            </button>
-            <button className="bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-full text-xs font-bold transition-all shadow-lg shadow-purple-600/20">
-              Follow
-            </button>
+      {/* MAIN CONTENT */}
+      <main className="pt-32 pb-24 px-4 md:px-8 max-w-5xl mx-auto space-y-24">
+        {/* HERO HEADER */}
+        <header className="text-center space-y-4 max-w-2xl mx-auto">
+          <div className="inline-block px-3 py-1 bg-purple-500/10 border border-purple-500/20 rounded-full mb-2">
+            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-purple-400">Kick Signal Matrix Alpha</span>
           </div>
-        </nav>
-      )}
+          <h2 className="text-5xl md:text-6xl font-black tracking-tighter uppercase italic leading-[0.9]">
+            Signal <span className="text-purple-500">Relay</span>
+          </h2>
+          <p className="text-zinc-500 text-xs font-bold uppercase tracking-[0.1em] leading-relaxed max-w-md mx-auto">
+            Monitoring multi-channel broadcasts via standard Kick protocols. Real-time visual data processing.
+          </p>
+        </header>
 
-      {/* Main Content Area */}
-      <main className={`flex-1 flex flex-col items-center justify-center ${isFakeFullscreen ? 'p-0' : 'p-4 md:p-8 max-w-5xl mx-auto w-full'}`}>
-        
-        {/* Main Stream Player Column */}
-        <div className="w-full space-y-8">
-          <StreamContainer isFakeFullscreen={isFakeFullscreen} onExitFullscreen={() => setIsFakeFullscreen(false)} />
-          
-          {!isFakeFullscreen && (
-            <div className="flex flex-col items-center gap-4">
-              {/* Fake Fullscreen Toggle Button */}
-              <button 
-                onClick={toggleFakeFullscreen}
-                className="group flex items-center gap-3 bg-zinc-900 hover:bg-zinc-800 border border-purple-500/30 hover:border-purple-500 text-zinc-300 hover:text-white px-10 py-5 rounded-2xl transition-all duration-300 shadow-xl shadow-purple-500/5 active:scale-95"
-              >
-                <i className="fa-solid fa-expand text-purple-500 group-hover:scale-110 transition-transform text-lg"></i>
-                <span className="font-black uppercase text-sm tracking-[0.2em]">Enlarge Player Mode</span>
-              </button>
-              
-              <p className="text-zinc-600 text-[10px] uppercase font-bold tracking-widest text-center">
-                Interactive controls disabled for uninterrupted viewing
-              </p>
+        {/* FEED 1: TAKE FROM */}
+        <StreamContainer 
+          title="Primary Stream" 
+          subtitle="Main Intelligence Feed // Node Alpha"
+          channel="takefrom"
+          accentColor="purple"
+        />
+
+        {/* FEED 2: AUDIO55 */}
+        <StreamContainer 
+          title="Audio 55" 
+          subtitle="Auxiliary Audio Monitoring // Node Gamma"
+          channel="audio55"
+          accentColor="blue"
+        />
+
+        {/* INFO GRID */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-12">
+          {[
+            { icon: 'fa-gauge-high', title: 'Stable Embed', desc: 'Direct Kick.com integration for native reliability.' },
+            { icon: 'fa-shield-halved', title: 'Secure Relay', desc: 'Sandboxed iframe implementation for viewer safety.' },
+            { icon: 'fa-infinity', title: 'Always Live', desc: 'Auto-reconnection logic handled by host servers.' }
+          ].map((feature, i) => (
+            <div key={i} className="p-8 bg-zinc-900/40 border border-zinc-800/50 rounded-[2rem] hover:bg-zinc-900/60 transition-all group">
+              <i className={`fa-solid ${feature.icon} text-xl text-purple-500 mb-6 group-hover:scale-110 transition-transform`}></i>
+              <h3 className="font-black text-sm uppercase tracking-widest mb-2">{feature.title}</h3>
+              <p className="text-zinc-500 text-[10px] font-bold uppercase leading-relaxed tracking-wider">{feature.desc}</p>
             </div>
-          )}
+          ))}
         </div>
       </main>
 
-      {/* Footer - Hidden in fake fullscreen */}
-      {!isFakeFullscreen && (
-        <footer className="mt-auto py-8 px-4 border-t border-zinc-800 bg-zinc-950/50">
-          <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-zinc-500 text-sm">&copy; 2024 VibeCast. All rights reserved.</p>
-            <div className="flex items-center gap-6">
-              <a href="#" className="text-zinc-500 hover:text-white transition-colors"><i className="fa-brands fa-twitter text-xl"></i></a>
-              <a href="#" className="text-zinc-500 hover:text-white transition-colors"><i className="fa-brands fa-discord text-xl"></i></a>
-              <a href="#" className="text-zinc-500 hover:text-white transition-colors"><i className="fa-brands fa-instagram text-xl"></i></a>
-            </div>
-          </div>
-        </footer>
-      )}
+      <footer className="py-12 border-t border-zinc-900 text-center opacity-40">
+        <p className="text-zinc-600 text-[10px] uppercase font-black tracking-[0.4em]">&copy; 2024 VIBECAST SIGNAL SYSTEMS // GLOBAL BROADCASTING UNIT</p>
+      </footer>
     </div>
   );
 };
