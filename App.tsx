@@ -4,6 +4,10 @@ import HlsPlayer from './components/HlsPlayer';
 
 const App: React.FC = () => {
   const STREAM_URL = "https://1a-1791.com/live/4gf18j5s/live-hls/9t9f-w1z5/chunklist_i1_DVR.m3u8";
+  const TWITCH_CHANNEL = "jeskkii";
+  
+  // Get current hostname for Twitch parent requirement
+  const currentHost = typeof window !== 'undefined' ? window.location.hostname : '';
 
   return (
     <div className="min-h-screen bg-[#050507] text-zinc-100 selection:bg-purple-500/30">
@@ -27,39 +31,64 @@ const App: React.FC = () => {
       </nav>
 
       {/* MAIN CONTENT */}
-      <main className="pt-24 md:pt-32 pb-12 md:pb-24 px-4 md:px-8 max-w-6xl mx-auto space-y-12 md:space-y-20">
-        {/* HERO HEADER */}
-        <header className="text-center space-y-4 max-w-2xl mx-auto">
-          <div className="inline-block px-3 py-1 bg-purple-500/10 border border-purple-500/20 rounded-full mb-2">
-            <span className="text-[9px] font-black uppercase tracking-[0.4em] text-purple-400">Quantum HLS Stream Decoder</span>
-          </div>
-          <h2 className="text-5xl md:text-7xl font-black tracking-tighter uppercase italic leading-[0.85] text-white">
-            Live <span className="text-purple-500">Intelligence</span>
-          </h2>
-          <p className="text-zinc-500 text-[11px] md:text-xs font-bold uppercase tracking-[0.15em] leading-relaxed max-w-md mx-auto">
-            Direct high-fidelity HLS relay active. Processing incoming metadata for optimized visual throughput.
-          </p>
-        </header>
-
+      <main className="pt-24 md:pt-32 pb-12 md:pb-24 px-4 md:px-8 max-w-6xl mx-auto space-y-8 md:space-y-12">
         {/* SINGLE DOMINANT HLS PLAYER */}
         <div className="w-full">
           <HlsPlayer 
-            title="Operational Command Feed"
-            subtitle="Encrypted HLS Uplink // Channel 01"
             src={STREAM_URL}
           />
         </div>
 
+        {/* TWITCH CHAT SECTION */}
+        <div className="w-full space-y-4">
+          <div className="flex items-center justify-between px-2">
+            <div className="flex items-center gap-3">
+              <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse shadow-[0_0_8px_rgba(168,85,247,0.6)]"></div>
+              <h3 className="text-xs md:text-sm font-black uppercase italic tracking-widest text-zinc-400">
+                Interactive <span className="text-white">Relay</span> Feed
+              </h3>
+            </div>
+            <div className="flex items-center gap-2 text-zinc-600">
+              <i className="fa-brands fa-twitch text-[10px]"></i>
+              <span className="text-[9px] font-black uppercase tracking-widest italic">{TWITCH_CHANNEL} // CHAT</span>
+            </div>
+          </div>
+          
+          <div className="relative w-full h-[500px] md:h-[650px] rounded-2xl md:rounded-[2.5rem] overflow-hidden bg-black border border-white/5 shadow-2xl ring-1 ring-white/10 group hover:ring-purple-500/20 transition-all duration-700">
+            <iframe
+              src={`https://www.twitch.tv/embed/${TWITCH_CHANNEL}/chat?parent=${currentHost}&darkpopout=true`}
+              height="100%"
+              width="100%"
+              className="border-0 w-full h-full"
+              title="Twitch Chat Feed"
+              allowFullScreen={false}
+            />
+            
+            {/* AMBIENT GLOW EFFECT */}
+            <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-purple-500/0 via-transparent to-purple-500/[0.02]"></div>
+          </div>
+          
+          <div className="flex items-center justify-between px-2">
+            <p className="text-[8px] md:text-[9px] text-zinc-600 font-bold uppercase tracking-widest italic opacity-60">
+              * Direct Twitch.tv bridge via encrypted secure gateway.
+            </p>
+            <div className="flex items-center gap-2">
+              <span className="text-[8px] text-zinc-700 font-bold uppercase">Status:</span>
+              <span className="text-[8px] text-green-500 font-black uppercase animate-pulse">Connected</span>
+            </div>
+          </div>
+        </div>
+
         {/* TECH STATS GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8">
           {[
             { icon: 'fa-wave-square', title: 'HLS Protocol', desc: 'Chunk-based streaming ensuring stability under high-load network conditions.' },
             { icon: 'fa-microchip', title: 'Hardware Accel', desc: 'GPU-accelerated decoding via hls.js for low-latency visual performance.' },
             { icon: 'fa-shield-halved', title: 'Secure Relay', desc: 'Encrypted DVR handshake protocols protecting signal integrity.' }
           ].map((feature, i) => (
             <div key={i} className="p-8 bg-zinc-900/40 border border-zinc-800/50 rounded-[2rem] hover:bg-zinc-900/60 hover:border-purple-500/30 transition-all group">
-              <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-purple-500/10 transition-colors">
-                <i className={`fa-solid ${feature.icon} text-xl text-zinc-500 group-hover:text-purple-500 transition-all`}></i>
+              <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-purple-500/10 transition-colors text-zinc-500 group-hover:text-purple-500">
+                <i className={`fa-solid ${feature.icon} text-xl transition-all`}></i>
               </div>
               <h3 className="font-black text-sm uppercase tracking-widest mb-2 text-white/90">{feature.title}</h3>
               <p className="text-zinc-500 text-[10px] font-bold uppercase leading-relaxed tracking-wider">{feature.desc}</p>
