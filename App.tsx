@@ -54,6 +54,10 @@ const App: React.FC = () => {
             </div>
           </div>
           
+          {/* 
+              IMPORTANT: No absolute overlays are placed inside this div to prevent 
+              Twitch's "Chat window is obscured" security error.
+          */}
           <div className="relative w-full h-[500px] md:h-[650px] rounded-2xl md:rounded-[2.5rem] overflow-hidden bg-black border border-white/5 shadow-2xl ring-1 ring-white/10 group hover:ring-purple-500/20 transition-all duration-700">
             <iframe
               src={`https://www.twitch.tv/embed/${TWITCH_CHANNEL}/chat?parent=${currentHost}&darkpopout=true`}
@@ -63,9 +67,6 @@ const App: React.FC = () => {
               title="Twitch Chat Feed"
               allowFullScreen={false}
             />
-            
-            {/* AMBIENT GLOW EFFECT */}
-            <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-purple-500/0 via-transparent to-purple-500/[0.02]"></div>
           </div>
           
           <div className="flex items-center justify-between px-2">
