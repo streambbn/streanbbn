@@ -6,7 +6,8 @@ const App: React.FC = () => {
   const STREAM_URL = "https://1a-1791.com/live/4gf18j5s/live-hls/9t9f-w1z5/chunklist_i1_DVR.m3u8";
   const TWITCH_CHANNEL = "jeskkii";
   
-  // Get current hostname for Twitch parent requirement
+  // Get current hostname for Twitch parent requirement. 
+  // It's critical this matches the domain the site is served from.
   const currentHost = typeof window !== 'undefined' ? window.location.hostname : '';
 
   return (
@@ -55,18 +56,25 @@ const App: React.FC = () => {
           </div>
           
           {/* 
-              IMPORTANT: No absolute overlays are placed inside this div to prevent 
-              Twitch's "Chat window is obscured" security error.
+              CLEAN CHAT CONTAINER:
+              Removed 'rounded-2xl' and 'overflow-hidden' from the direct parent.
+              Twitch's security script often flags iframes that are clipped by 
+              border-radius + overflow-hidden on their parent.
           */}
-          <div className="relative w-full h-[500px] md:h-[650px] rounded-2xl md:rounded-[2.5rem] overflow-hidden bg-black border border-white/5 shadow-2xl ring-1 ring-white/10 group hover:ring-purple-500/20 transition-all duration-700">
-            <iframe
-              src={`https://www.twitch.tv/embed/${TWITCH_CHANNEL}/chat?parent=${currentHost}&darkpopout=true`}
-              height="100%"
-              width="100%"
-              className="border-0 w-full h-full"
-              title="Twitch Chat Feed"
-              allowFullScreen={false}
-            />
+          <div className="w-full h-[500px] md:h-[650px] bg-black border border-white/5 shadow-2xl transition-all duration-700">
+            {currentHost ? (
+              <iframe
+                src={`https://www.twitch.tv/embed/${TWITCH_CHANNEL}/chat?parent=${currentHost}`}
+                height="100%"
+                width="100%"
+                className="border-0 w-full h-full"
+                title="Twitch Chat Feed"
+              />
+            ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                    <span className="text-zinc-500 text-[10px] font-black uppercase tracking-widest animate-pulse">Initializing Secure Tunnel...</span>
+                </div>
+            )}
           </div>
           
           <div className="flex items-center justify-between px-2">
