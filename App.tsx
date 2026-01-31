@@ -3,7 +3,7 @@ import React from 'react';
 import HlsPlayer from './components/HlsPlayer';
 
 const App: React.FC = () => {
-  const STREAM_URL = "https://1a-1791.com/live/4gf18j5s/live-hls/9t9f-w1z5/chunklist_i1_DVR.m3u8";
+  const STREAM_URL = "https://1a-1791.com/live/r31jzt5k/live-hls/s8v6-u9sc/chunklist_i1_DVR.m3u8";
   const TWITCH_CHANNEL = "jeskkii";
   
   // Get current hostname for Twitch parent requirement.
