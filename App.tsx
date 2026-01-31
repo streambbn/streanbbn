@@ -6,111 +6,110 @@ const App: React.FC = () => {
   const STREAM_URL = "https://1a-1791.com/live/4gf18j5s/live-hls/9t9f-w1z5/chunklist_i1_DVR.m3u8";
   const TWITCH_CHANNEL = "jeskkii";
   
-  // Get current hostname for Twitch parent requirement. 
-  // It's critical this matches the domain the site is served from.
+  // Get current hostname for Twitch parent requirement.
   const currentHost = typeof window !== 'undefined' ? window.location.hostname : '';
 
   return (
-    <div className="min-h-screen bg-[#050507] text-zinc-100 selection:bg-purple-500/30">
-      {/* HEADER */}
-      <nav className="fixed top-0 w-full z-50 border-b border-white/5 bg-black/50 backdrop-blur-xl px-4 md:px-6 py-3 md:py-4 flex justify-between items-center">
+    <div className="flex flex-col h-screen bg-[#050507] text-zinc-100 overflow-hidden">
+      {/* HEADER - Slim Twitch-style */}
+      <nav className="h-12 md:h-14 border-b border-white/5 bg-[#18181b] px-4 flex justify-between items-center flex-shrink-0 z-50">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(147,51,234,0.4)]">
-            <i className="fa-solid fa-bolt-lightning text-white text-sm"></i>
+          <div className="w-7 h-7 bg-purple-600 rounded flex items-center justify-center">
+            <i className="fa-solid fa-bolt-lightning text-white text-xs"></i>
           </div>
-          <h1 className="text-lg md:text-xl font-black tracking-tighter uppercase italic">
+          <h1 className="text-sm md:text-base font-black tracking-tighter uppercase italic">
             Vibe<span className="text-purple-500">Cast</span>
           </h1>
         </div>
-        <div className="hidden md:flex items-center gap-6">
-           <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 hover:text-white cursor-pointer transition-colors">Signal Map</span>
-           <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 hover:text-white cursor-pointer transition-colors">Relay Nodes</span>
-           <div className="px-3 py-1 bg-green-500/10 border border-green-500/20 rounded-md">
-             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-green-500">Secure Line</span>
+        
+        <div className="flex items-center gap-4">
+           <div className="hidden md:flex items-center gap-4 mr-4 border-r border-white/10 pr-4">
+             <span className="text-[10px] font-bold uppercase text-zinc-400 hover:text-white cursor-pointer transition-colors">Browse</span>
+             <span className="text-[10px] font-bold uppercase text-zinc-400 hover:text-white cursor-pointer transition-colors">Relay</span>
+           </div>
+           <div className="px-2 py-0.5 bg-red-500 rounded text-[10px] font-black uppercase tracking-wider animate-pulse">
+             Live
            </div>
         </div>
       </nav>
 
-      {/* MAIN CONTENT */}
-      <main className="pt-24 md:pt-32 pb-12 md:pb-24 px-4 md:px-8 max-w-6xl mx-auto space-y-8 md:space-y-12">
-        {/* SINGLE DOMINANT HLS PLAYER */}
-        <div className="w-full">
-          <HlsPlayer 
-            src={STREAM_URL}
-          />
-        </div>
-
-        {/* TWITCH CHAT SECTION */}
-        <div className="w-full space-y-4">
-          <div className="flex items-center justify-between px-2">
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse shadow-[0_0_8px_rgba(168,85,247,0.6)]"></div>
-              <h3 className="text-xs md:text-sm font-black uppercase italic tracking-widest text-zinc-400">
-                Interactive <span className="text-white">Relay</span> Feed
-              </h3>
-            </div>
-            <div className="flex items-center gap-2 text-zinc-600">
-              <i className="fa-brands fa-twitch text-[10px]"></i>
-              <span className="text-[9px] font-black uppercase tracking-widest italic">{TWITCH_CHANNEL} // CHAT</span>
-            </div>
+      {/* MAIN LAYOUT: Side-by-side on desktop, Stacked on mobile */}
+      <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
+        
+        {/* PLAYER SECTION */}
+        <main className="flex-1 bg-black flex flex-col overflow-y-auto">
+          <div className="w-full">
+            <HlsPlayer src={STREAM_URL} />
           </div>
           
-          {/* 
-              CLEAN CHAT CONTAINER:
-              Removed 'rounded-2xl' and 'overflow-hidden' from the direct parent.
-              Twitch's security script often flags iframes that are clipped by 
-              border-radius + overflow-hidden on their parent.
-          */}
-          <div className="w-full h-[500px] md:h-[650px] bg-black border border-white/5 shadow-2xl transition-all duration-700">
+          {/* STREAM INFO PANEL */}
+          <div className="p-4 md:p-6 space-y-4">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 bg-purple-500 rounded-full flex-shrink-0 border-2 border-white/10 overflow-hidden">
+                  <div className="w-full h-full bg-gradient-to-br from-purple-400 to-purple-800 flex items-center justify-center">
+                    <i className="fa-solid fa-user text-white text-xl"></i>
+                  </div>
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold leading-tight">Live Broadcast: Mission Control</h2>
+                  <p className="text-purple-400 text-sm font-bold uppercase tracking-wide">VibeCast Official</p>
+                  <div className="flex gap-2 mt-2">
+                    <span className="px-2 py-0.5 bg-zinc-800 rounded text-[10px] font-bold text-zinc-300">HLS</span>
+                    <span className="px-2 py-0.5 bg-zinc-800 rounded text-[10px] font-bold text-zinc-300">English</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <button className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-1.5 px-4 rounded text-sm transition-colors">
+                  Follow
+                </button>
+                <button className="bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-1.5 px-4 rounded text-sm transition-colors">
+                  Subscribe
+                </button>
+              </div>
+            </div>
+            
+            <div className="pt-6 border-t border-white/5 hidden md:block">
+              <p className="text-xs text-zinc-400 leading-relaxed max-w-2xl">
+                Broadcasting via encrypted secure gateway. Optimized for low-latency HLS delivery. 
+                Interact with the community in the real-time relay feed.
+              </p>
+            </div>
+          </div>
+        </main>
+
+        {/* CHAT SECTION - Fixed sidebar on Desktop, Bottom fill on Mobile */}
+        <aside className="w-full md:w-[340px] lg:w-[380px] flex-shrink-0 bg-[#0e0e10] border-t md:border-t-0 md:border-l border-white/10 flex flex-col h-[400px] md:h-full">
+          {/* CHAT HEADER */}
+          <div className="h-10 md:h-12 flex items-center justify-between px-4 border-b border-white/10 flex-shrink-0 bg-[#18181b]">
+            <div className="flex items-center gap-2">
+              <i className="fa-solid fa-arrow-right-to-bracket text-zinc-400 text-xs"></i>
+              <span className="text-[11px] font-black uppercase tracking-widest text-zinc-100">Stream Chat</span>
+            </div>
+            <i className="fa-solid fa-users text-zinc-500 text-xs"></i>
+          </div>
+
+          {/* IFRAME CONTAINER - Zero padding/obscuration */}
+          <div className="flex-1 bg-black">
             {currentHost ? (
               <iframe
-                src={`https://www.twitch.tv/embed/${TWITCH_CHANNEL}/chat?parent=${currentHost}`}
+                src={`https://www.twitch.tv/embed/${TWITCH_CHANNEL}/chat?parent=${currentHost}&darkpopout=true`}
                 height="100%"
                 width="100%"
                 className="border-0 w-full h-full"
                 title="Twitch Chat Feed"
               />
             ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                    <span className="text-zinc-500 text-[10px] font-black uppercase tracking-widest animate-pulse">Initializing Secure Tunnel...</span>
-                </div>
+              <div className="w-full h-full flex items-center justify-center">
+                <div className="w-4 h-4 border-2 border-purple-500/20 border-t-purple-500 rounded-full animate-spin"></div>
+              </div>
             )}
           </div>
-          
-          <div className="flex items-center justify-between px-2">
-            <p className="text-[8px] md:text-[9px] text-zinc-600 font-bold uppercase tracking-widest italic opacity-60">
-              * Direct Twitch.tv bridge via encrypted secure gateway.
-            </p>
-            <div className="flex items-center gap-2">
-              <span className="text-[8px] text-zinc-700 font-bold uppercase">Status:</span>
-              <span className="text-[8px] text-green-500 font-black uppercase animate-pulse">Connected</span>
-            </div>
-          </div>
-        </div>
+        </aside>
 
-        {/* TECH STATS GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8">
-          {[
-            { icon: 'fa-wave-square', title: 'HLS Protocol', desc: 'Chunk-based streaming ensuring stability under high-load network conditions.' },
-            { icon: 'fa-microchip', title: 'Hardware Accel', desc: 'GPU-accelerated decoding via hls.js for low-latency visual performance.' },
-            { icon: 'fa-shield-halved', title: 'Secure Relay', desc: 'Encrypted DVR handshake protocols protecting signal integrity.' }
-          ].map((feature, i) => (
-            <div key={i} className="p-8 bg-zinc-900/40 border border-zinc-800/50 rounded-[2rem] hover:bg-zinc-900/60 hover:border-purple-500/30 transition-all group">
-              <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-purple-500/10 transition-colors text-zinc-500 group-hover:text-purple-500">
-                <i className={`fa-solid ${feature.icon} text-xl transition-all`}></i>
-              </div>
-              <h3 className="font-black text-sm uppercase tracking-widest mb-2 text-white/90">{feature.title}</h3>
-              <p className="text-zinc-500 text-[10px] font-bold uppercase leading-relaxed tracking-wider">{feature.desc}</p>
-            </div>
-          ))}
-        </div>
-      </main>
-
-      <footer className="py-12 border-t border-zinc-900 text-center opacity-40">
-        <p className="text-zinc-600 text-[10px] uppercase font-black tracking-[0.4em] px-4">
-          VIBECAST BROADCASTING GROUP // EST. 2024 // SIGNAL SECURE
-        </p>
-      </footer>
+      </div>
     </div>
   );
 };

@@ -27,7 +27,6 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({ src }) => {
           video.play().catch(e => console.log("Autoplay prevented:", e));
         });
       } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        // Native support for HLS (Safari)
         video.src = src;
         video.addEventListener('loadedmetadata', () => {
           video.play().catch(e => console.log("Autoplay prevented:", e));
@@ -45,37 +44,29 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({ src }) => {
   }, [src]);
 
   return (
-    <div className="w-full group">
-      <div className="relative aspect-video rounded-2xl md:rounded-[2.5rem] overflow-hidden bg-black border border-white/5 shadow-2xl ring-1 ring-white/10 group-hover:ring-purple-500/20 transition-all duration-700">
+    <div className="w-full bg-black relative group">
+      <div className="relative aspect-video bg-black overflow-hidden shadow-2xl">
         <video
           ref={videoRef}
-          className="w-full h-full object-contain bg-black"
+          className="w-full h-full object-contain bg-black cursor-pointer"
           controls
           muted
           autoPlay
           playsInline
         />
 
-        {/* TOP OVERLAY */}
-        <div className="absolute top-4 md:top-8 left-4 md:left-8 pointer-events-none z-30">
-          <div className="bg-black/60 backdrop-blur-xl border border-white/10 px-3 md:px-4 py-1.5 md:py-2 rounded-2xl flex items-center gap-3">
-            <div className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600"></span>
-            </div>
-            <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-white/90">Signal Active</span>
+        {/* LIVE LABEL OVERLAY */}
+        <div className="absolute top-4 left-4 pointer-events-none z-30 flex gap-2">
+          <div className="bg-red-600 px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider text-white">
+            Live
+          </div>
+          <div className="bg-black/60 backdrop-blur-md px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider text-white">
+            1080p
           </div>
         </div>
 
-        {/* SCANLINE EFFECT OVERLAY */}
-        <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%),linear-gradient(90deg,rgba(255,0,0,0.03),rgba(0,255,0,0.01),rgba(0,0,255,0.03))] z-10 bg-[length:100%_2px,3px_100%] opacity-20"></div>
-      </div>
-      
-      <div className="mt-4 flex items-center gap-4 px-2 opacity-30 group-hover:opacity-60 transition-opacity">
-        <i className="fa-solid fa-circle-info text-purple-500 text-[10px]"></i>
-        <p className="text-[8px] md:text-[9px] text-zinc-400 font-bold uppercase tracking-widest italic">
-          High-bitrate HLS encryption active.
-        </p>
+        {/* SCANLINE SUBTLE EFFECT */}
+        <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.05)_50%)] z-10 bg-[length:100%_2px] opacity-20"></div>
       </div>
     </div>
   );
