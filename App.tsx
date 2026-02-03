@@ -3,7 +3,7 @@ import React from 'react';
 import HlsPlayer from './components/HlsPlayer';
 
 const App: React.FC = () => {
-  const STREAM_URL = "https://live-global-cdn-v02.sooplive.co.kr/live-stmc-31/auth_playlist.m3u8?aid=.A32.pxqRXFPZNcY9Qg1.H_npJeOqgltjj_y9oI3zLY-XCaq8Ij7Ffvc7h22hC1CQGf1sVrpg7k-RWFdgJHskbP4IXUrcgPTOWCn2GMSC3VgmMpcxVmO3VLXVx4oWA47f5MdTrJW1PRlMtNgJl2weml9E6El2my5BIzJ4FNWPpWOB0_H3kHuu1w6_uVuIkhc";
+  const STREAM_URL = "https://cdn-live-tv.ru/api/v1/channels/za-supersport-psl/tracks-v1a1/mono.ts.m3u8?token=1b665f489248e3db3b773793331b30f53a5cc1bc2e0ed95993385ecd0aa5936b.1770109393.58c3b1f9d5f9fb6dfc8733a3ade84764.314e4d304fa112119f45d681e0c97c5c.ea4d57c77a29d7d6e95a54a178c3b6c2.b27fe1fc21490475";
   const TWITCH_CHANNEL = "jeskkii";
   
   // Get current hostname for Twitch parent requirement.
