@@ -9,7 +9,7 @@ const App: React.FC = () => {
   const [hostname, setHostname] = useState<string>('');
   
   // Channels Configuration
-  const PRIMARY_M3U8_URL = "https://cdn-live-tv.ru/api/v1/channels/za-supersport-psl/tracks-v1a1/mono.ts.m3u8?token=1b665f489248e3db3b773793331b30f53a5cc1bc2e0ed95993385ecd0aa5936b.1770109393.58c3b1f9d5f9fb6dfc8733a3ade84764.314e4d304fa112119f45d681e0c97c5c.ea4d57c77a29d7d6e95a54a178c3b6c2.b27fe1fc21490475";
+  const PRIMARY_M3U8_URL = "https://live-global-cdn-v02.sooplive.co.kr/live-stmc-31/auth_master_playlist.m3u8?aid=.A32.pxqRXFPZNcY9Qg1.H_npJeOqgltjj_y9oI3zLUQPpKv0Ik4JvaoXlCv1fF6dPB4lmtPArfZtlJ1O441Y3xd8kwDKVELtqWCw_vRykiDCdFdQmiMxUTV9AFKX7noFSojVpob5kdAcxPTz6xFefEiy0ioav9IDfT_AFrYqNVOcIyWNB0i8Uzr0L7P3rvJYrdBImX4h2f8yTIO5blDeC6tyTBo8Cau4rtMNrKvzjg";
   const TWITCH_CHAT_CHANNEL = "jeskkii";
   const SOOP_EMBED_URL = "https://play.sooplive.co.kr/benzo90/291320022/embed";
 
