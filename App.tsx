@@ -165,6 +165,30 @@ const App: React.FC = () => {
           </aside>
         </div>
       </div>
+
+      {/* FOOTER */}
+      <footer className="h-6 md:h-8 border-t border-white/5 bg-[#09090b] px-4 flex items-center justify-between flex-shrink-0 z-50">
+        <div className="flex items-center gap-3">
+          <span className="text-[9px] font-bold text-zinc-600 uppercase tracking-wider">© 2025 VibeCast Engine</span>
+          <div className="hidden md:flex items-center gap-2 text-[9px] text-zinc-800">
+            <span>•</span>
+            <span>Latency: 142ms</span>
+            <span>•</span>
+            <span>Nodes: Cluster-7</span>
+          </div>
+        </div>
+        <div className="flex items-center gap-4">
+          <a 
+            href="https://facebook.com" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="text-zinc-500 hover:text-white transition-colors flex items-center gap-1"
+          >
+            <i className="fa-brands fa-facebook text-[10px]"></i>
+            <span className="hidden md:inline text-[9px] font-bold uppercase tracking-tighter">Facebook</span>
+          </a>
+        </div>
+      </footer>
     </div>
   );
 };
