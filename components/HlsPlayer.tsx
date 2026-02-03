@@ -20,11 +20,31 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({ src }) => {
         hls = new Hls({
           enableWorker: true,
           lowLatencyMode: true,
+          backBufferLength: 90
         });
         hls.loadSource(src);
         hls.attachMedia(video);
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
           video.play().catch(e => console.log("Autoplay prevented:", e));
+        });
+        
+        hls.on(Hls.Events.ERROR, (event, data) => {
+          if (data.fatal) {
+            switch (data.type) {
+              case Hls.ErrorTypes.NETWORK_ERROR:
+                console.error("Fatal network error encountered, trying to recover");
+                hls.startLoad();
+                break;
+              case Hls.ErrorTypes.MEDIA_ERROR:
+                console.error("Fatal media error encountered, trying to recover");
+                hls.recoverMediaError();
+                break;
+              default:
+                console.error("Unrecoverable error");
+                hls.destroy();
+                break;
+            }
+          }
         });
       } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
         video.src = src;
@@ -44,29 +64,27 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({ src }) => {
   }, [src]);
 
   return (
-    <div className="w-full bg-black relative group">
-      <div className="relative aspect-video bg-black overflow-hidden shadow-2xl">
+    <div className="w-full bg-black relative group overflow-hidden">
+      <div className="relative aspect-video bg-black shadow-2xl">
         <video
           ref={videoRef}
-          className="w-full h-full object-contain bg-black cursor-pointer"
+          className="w-full h-full object-contain bg-black"
           controls
           muted
           autoPlay
           playsInline
         />
-
-        {/* LIVE LABEL OVERLAY */}
+        
+        {/* Quality Overlay */}
         <div className="absolute top-4 left-4 pointer-events-none z-30 flex gap-2">
-          <div className="bg-red-600 px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider text-white">
+          <div className="bg-red-600 px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider text-white flex items-center gap-1">
+            <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
             Live
           </div>
           <div className="bg-black/60 backdrop-blur-md px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider text-white">
-            1080p
+            Source
           </div>
         </div>
-
-        {/* SCANLINE SUBTLE EFFECT */}
-        <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.05)_50%)] z-10 bg-[length:100%_2px] opacity-20"></div>
       </div>
     </div>
   );
