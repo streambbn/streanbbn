@@ -1,6 +1,5 @@
 
 import React, { useState, useEffect } from 'react';
-import HlsPlayer from './components/HlsPlayer';
 
 type Page = 'vibecast' | 'sooplive';
 
@@ -9,7 +8,7 @@ const App: React.FC = () => {
   const [hostname, setHostname] = useState<string>('');
   
   // Channels Configuration
-  const PRIMARY_M3U8_URL = "https://live-global-cdn-v02.sooplive.co.kr/live-stmc-31/auth_master_playlist.m3u8?aid=.A32.pxqRXFPZNcY9Qg1.H_npJeOqgltjj_y9oI3zLUQPpKv0Ik4JvaoXlCv1fF6dPB4lmtPArfZtlJ1O441Y3xd8kwDKVELtqWCw_vRykiDCdFdQmiMxUTV9AFKX7noFSojVpob5kdAcxPTz6xFefEiy0ioav9IDfT_AFrYqNVOcIyWNB0i8Uzr0L7P3rvJYrdBImX4h2f8yTIO5blDeC6tyTBo8Cau4rtMNrKvzjg";
+  const VIBECAST_EMBED_URL = "https://ntvstream.cx/embed?t=Rm5vaFdRd1hMck0xejhpMUNHdE9lTFVsbEVjTUlpaWhqSENROVpBOFBZaHBYcmlOeEs2UzRvVk1wV2F4R3hrdw~~";
   const TWITCH_CHAT_CHANNEL = "jeskkii";
   const SOOP_EMBED_URL = "https://play.sooplive.co.kr/benzo90/291320022/embed";
 
@@ -82,8 +81,15 @@ const App: React.FC = () => {
           <main className="flex-1 bg-black flex flex-col overflow-y-auto overflow-x-hidden">
             {currentPage === 'vibecast' ? (
               <div className="flex-1 flex flex-col">
-                <div className="w-full">
-                  <HlsPlayer src={PRIMARY_M3U8_URL} />
+                <div className="w-full aspect-video bg-black relative">
+                  {/* VIBECAST PRIMARY EMBED - Sandbox attribute explicitly removed */}
+                  <iframe 
+                    src={VIBECAST_EMBED_URL}
+                    className="absolute inset-0 w-full h-full border-0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    title="VibeCast Primary Stream"
+                  />
                 </div>
                 <div className="p-4 md:p-6 border-b border-white/5 bg-[#0f0f12]">
                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -92,7 +98,7 @@ const App: React.FC = () => {
                         <div>
                           <h2 className="text-lg font-bold">VibeCast Primary Broadcast</h2>
                           <div className="flex items-center gap-3 mt-1">
-                            <span className="text-purple-400 text-xs font-bold uppercase tracking-wider">M3U8 Feed</span>
+                            <span className="text-purple-400 text-xs font-bold uppercase tracking-wider">Premium Feed</span>
                             <span className="text-zinc-600 text-xs font-bold uppercase">• High Quality Stream</span>
                           </div>
                         </div>
@@ -107,7 +113,7 @@ const App: React.FC = () => {
             ) : (
               <div className="flex-1 flex flex-col">
                 <div className="w-full aspect-video bg-black relative">
-                  {/* SOOPLIVE PLAYER */}
+                  {/* SOOPLIVE PLAYER - Sandbox attribute explicitly removed */}
                   <iframe 
                     src={SOOP_EMBED_URL}
                     className="absolute inset-0 w-full h-full border-0"
