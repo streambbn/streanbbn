@@ -56,11 +56,11 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({ src, onUrlChange }) => {
       const hls = new Hls({
         enableWorker: true,
         lowLatencyMode: lowLatency,
-        maxBufferLength: lowLatency ? 10 : 30, // 30s buffer cushion in smooth mode
-        maxMaxBufferLength: lowLatency ? 20 : 60,
-        maxBufferSize: 60 * 1024 * 1024, // 60MB max buffer size
-        liveSyncDurationCount: lowLatency ? 2 : 3, // 3 segments (~6-10s) to absorb network jitter completely
-        liveMaxLatencyDurationCount: lowLatency ? 5 : 10,
+        liveSyncDuration: lowLatency ? 3 : 14, // 14s delay behind live head for ultra-stable playback
+        liveMaxLatencyDuration: lowLatency ? 8 : 28,
+        maxBufferLength: lowLatency ? 10 : 45, // 45s buffer cushion in smooth mode
+        maxMaxBufferLength: lowLatency ? 20 : 90,
+        maxBufferSize: 100 * 1024 * 1024, // 100MB max buffer allowance
         highBufferWatchdogPeriod: 2,
         manifestLoadingTimeOut: 15000,
         manifestLoadingMaxRetry: 4,
@@ -299,7 +299,7 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({ src, onUrlChange }) => {
             <div className="flex items-center gap-2 pointer-events-auto">
               <button
                 onClick={() => setLowLatency(!lowLatency)}
-                title={lowLatency ? "Low Latency (Fast, may stutter)" : "Smooth Mode (6s Buffer Cushion, Zero Stutter)"}
+                title={lowLatency ? "Low Latency (Fast, may stutter)" : "Stable Buffer Mode (12-15s Delay, Zero Stutter)"}
                 className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider backdrop-blur-md transition-all flex items-center gap-1.5 border ${
                   lowLatency 
                     ? 'bg-amber-500/20 border-amber-500/40 text-amber-300' 
@@ -307,7 +307,7 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({ src, onUrlChange }) => {
                 }`}
               >
                 <i className={`fa-solid ${lowLatency ? 'fa-bolt' : 'fa-gauge-high'}`}></i>
-                <span>{lowLatency ? 'Low-Latency' : 'Smooth Buffer'}</span>
+                <span>{lowLatency ? 'Low-Latency' : '12s Stable Buffer'}</span>
               </button>
 
               <button
