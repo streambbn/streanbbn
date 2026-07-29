@@ -9,7 +9,7 @@ const App: React.FC = () => {
   const [hostname, setHostname] = useState<string>('');
   
   // Channels Configuration
-  const [primaryUrl, setPrimaryUrl] = useState<string>("https://live-global-cdn-v02.sooplive.com/live-stm-12/auth_master_playlist.m3u8?aid=.A32.pxqRXFPZNcY9Qg1.5DA5vFyDcihoAyKQA5f8kBOi_cwE7M4Hv9Bf4mkGIrtMtOlkg_waMvIjwCplaGbOr3U2g-wMubJHG6RPxSGhYRkeYQ-8IN27Qn5Z_5tXW45PIu1YRbSoZvHQECyFOX4khZYeLb84wHHObfBwQczfRxGFQlTWc7iRijSd61okuTitCtux5gWXl67jYkSdqMccH4zsTGYKeK-QpLUooZLUEA");
+  const [primaryUrl, setPrimaryUrl] = useState<string>("https://live-global-cdn-v02.sooplive.com/live-stmc-22/auth_master_playlist.m3u8?aid=.A32.pxqRXFPZNcY9Qg1.qxdDFNModdlRSHbiWBd1vOE22nutZhD9cWsskF1tYDJaYikd_a0gDVSenhlZdWSt3yIpMnYlH3cNfkv3NeoVg4bDKuOU2Hepx3c8OXUSqy4Tlwj1Hs6juK89d_xJ_9rmuUe_tZeBOzCSnHRIsjtTvPeiI2zgF6uXRsafsDRhZpk0WckLbJ9VYbCsn3QtiKPapmOvH-0E46FUPlHhWL28aA");
   const TWITCH_CHAT_CHANNEL = "jeskkii";
   const [soopUrl, setSoopUrl] = useState<string>("https://live-global-cdn-v02.sooplive.com/live-stm-12/auth_master_playlist.m3u8?aid=.A32.pxqRXFPZNcY9Qg1.5DA5vFyDcihoAyKQA5f8kBOi_cwE7M4Hv9Bf4mkGIrtMtOlkg_waMvIjwCplaGbOr3U2g-wMubJHG6RPxSGhYRkeYQ-8IN27Qn5Z_5tXW45PIu1YRbSoZvHQECyFOX4khZYeLb84wHHObfBwQczfRxGFQlTWc7iRijSd61okuTitCtux5gWXl67jYkSdqMccH4zsTGYKeK-QpLUooZLUEA");
 
