@@ -86,8 +86,25 @@ async function startServer() {
           res.setHeader("Content-Type", contentType);
         }
         res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
-        const arrayBuffer = await response.arrayBuffer();
-        res.send(Buffer.from(arrayBuffer));
+
+        // Stream the segment through as bytes arrive instead of buffering
+        // the whole thing in memory first — this was adding a full extra
+        // download+upload round trip of latency to every segment.
+        if (response.body) {
+          const reader = (response.body as ReadableStream<Uint8Array>).getReader();
+          try {
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              res.write(Buffer.from(value));
+            }
+          } finally {
+            res.end();
+          }
+        } else {
+          const arrayBuffer = await response.arrayBuffer();
+          res.end(Buffer.from(arrayBuffer));
+        }
       }
     } catch (err: any) {
       console.error("Proxy error:", err);
