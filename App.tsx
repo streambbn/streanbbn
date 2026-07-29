@@ -9,7 +9,7 @@ const App: React.FC = () => {
   const [hostname, setHostname] = useState<string>('');
   
   // Channels Configuration
-  const VIBECAST_EMBED_URL = "https://ntvstream.cx/embed?t=Rm5vaFdRd1hMck0xejhpMUNHdE9lTFVsbEVjTUlpaWhqSENROVpBOFBZaHBYcmlOeEs2UzRvVk1wV2F4R3hrdw~~";
+  const [primaryUrl, setPrimaryUrl] = useState<string>("https://live-global-cdn-v02.sooplive.com/live-stm-12/auth_master_playlist.m3u8?aid=.A32.pxqRXFPZNcY9Qg1.5DA5vFyDcihoAyKQA5f8kBOi_cwE7M4Hv9Bf4mkGIrtMtOlkg_waMvIjwCplaGbOr3U2g-wMubJHG6RPxSGhYRkeYQ-8IN27Qn5Z_5tXW45PIu1YRbSoZvHQECyFOX4khZYeLb84wHHObfBwQczfRxGFQlTWc7iRijSd61okuTitCtux5gWXl67jYkSdqMccH4zsTGYKeK-QpLUooZLUEA");
   const TWITCH_CHAT_CHANNEL = "jeskkii";
   const [soopUrl, setSoopUrl] = useState<string>("https://live-global-cdn-v02.sooplive.com/live-stm-12/auth_master_playlist.m3u8?aid=.A32.pxqRXFPZNcY9Qg1.5DA5vFyDcihoAyKQA5f8kBOi_cwE7M4Hv9Bf4mkGIrtMtOlkg_waMvIjwCplaGbOr3U2g-wMubJHG6RPxSGhYRkeYQ-8IN27Qn5Z_5tXW45PIu1YRbSoZvHQECyFOX4khZYeLb84wHHObfBwQczfRxGFQlTWc7iRijSd61okuTitCtux5gWXl67jYkSdqMccH4zsTGYKeK-QpLUooZLUEA");
 
@@ -82,16 +82,7 @@ const App: React.FC = () => {
           <main className="flex-1 bg-black flex flex-col overflow-y-auto overflow-x-hidden">
             {currentPage === 'vibecast' ? (
               <div className="flex-1 flex flex-col">
-                <div className="w-full aspect-video bg-black relative">
-                  {/* VIBECAST PRIMARY EMBED - Sandbox attribute explicitly removed */}
-                  <iframe 
-                    src={VIBECAST_EMBED_URL}
-                    className="absolute inset-0 w-full h-full border-0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    title="VibeCast Primary Stream"
-                  />
-                </div>
+                <HlsPlayer src={primaryUrl} onUrlChange={setPrimaryUrl} />
                 <div className="p-4 md:p-6 border-b border-white/5 bg-[#0f0f12]">
                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                      <div className="flex items-center gap-4">
