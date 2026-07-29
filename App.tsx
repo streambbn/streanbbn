@@ -84,20 +84,43 @@ const App: React.FC = () => {
               <div className="flex-1 flex flex-col">
                 <HlsPlayer src={primaryUrl} onUrlChange={setPrimaryUrl} />
                 <div className="p-4 md:p-6 border-b border-white/5 bg-[#0f0f12]">
-                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-purple-600 rounded-full border-2 border-white/10 flex items-center justify-center font-black text-xl">P</div>
-                        <div>
-                          <h2 className="text-lg font-bold">VibeCast Primary Broadcast</h2>
-                          <div className="flex items-center gap-3 mt-1">
-                            <span className="text-purple-400 text-xs font-bold uppercase tracking-wider">Premium Feed</span>
-                            <span className="text-zinc-600 text-xs font-bold uppercase">• High Quality Stream</span>
+                   <div className="flex flex-col gap-4">
+                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                       <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 bg-purple-600 rounded-full border-2 border-white/10 flex items-center justify-center font-black text-xl">P</div>
+                          <div>
+                            <h2 className="text-lg font-bold">VibeCast Primary Broadcast</h2>
+                            <div className="flex items-center gap-3 mt-1">
+                              <span className="text-purple-400 text-xs font-bold uppercase tracking-wider">HLS Feed</span>
+                              <span className="text-zinc-600 text-xs font-bold uppercase">• High Quality Stream</span>
+                            </div>
                           </div>
-                        </div>
+                       </div>
+                       <div className="flex items-center gap-2">
+                          <button className="bg-purple-600 hover:bg-purple-500 px-4 py-1.5 rounded font-bold text-xs transition-colors">Follow</button>
+                          <button className="bg-zinc-800 hover:bg-zinc-700 px-4 py-1.5 rounded font-bold text-xs transition-colors">Share</button>
+                       </div>
                      </div>
-                     <div className="flex items-center gap-2">
-                        <button className="bg-purple-600 hover:bg-purple-500 px-4 py-1.5 rounded font-bold text-xs transition-colors">Follow</button>
-                        <button className="bg-zinc-800 hover:bg-zinc-700 px-4 py-1.5 rounded font-bold text-xs transition-colors">Share</button>
+
+                     {/* Stream URL Configurator */}
+                     <div className="mt-2 p-3 bg-zinc-900/80 border border-white/10 rounded-lg flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                        <div className="flex items-center gap-2 text-xs text-purple-400 font-bold uppercase tracking-wider shrink-0">
+                           <i className="fa-solid fa-link text-xs"></i>
+                           <span>Stream Source:</span>
+                        </div>
+                        <input 
+                          type="text" 
+                          value={primaryUrl}
+                          onChange={(e) => setPrimaryUrl(e.target.value)}
+                          placeholder="Paste HLS .m3u8 URL..."
+                          className="flex-1 bg-black/60 border border-white/10 rounded px-3 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-purple-500 font-mono"
+                        />
+                        <button 
+                          onClick={() => setPrimaryUrl(primaryUrl)}
+                          className="bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs px-3 py-1.5 rounded uppercase tracking-wider shrink-0"
+                        >
+                           Reload Source
+                        </button>
                      </div>
                    </div>
                 </div>
