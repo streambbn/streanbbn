@@ -7,15 +7,30 @@ interface HlsPlayerProps {
   onUrlChange?: (newUrl: string) => void;
 }
 
+interface QualityLevel {
+  id: number;
+  height: number;
+  bitrate: number;
+  name: string;
+}
+
 const HlsPlayer: React.FC<HlsPlayerProps> = ({ src, onUrlChange }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [retryCount, setRetryCount] = useState<number>(0);
   const [useProxy, setUseProxy] = useState<boolean>(true);
+  const [lowLatency, setLowLatency] = useState<boolean>(false); // Default to Smooth Mode to prevent lag
   const [isEditingUrl, setIsEditingUrl] = useState<boolean>(false);
   const [inputUrl, setInputUrl] = useState<string>(src);
+
+  // Quality levels state
+  const [levels, setLevels] = useState<QualityLevel[]>([]);
+  const [selectedLevel, setSelectedLevel] = useState<number>(-1); // -1 is Auto
+  const [showSettings, setShowSettings] = useState<boolean>(false);
+
   const hlsRef = useRef<Hls | null>(null);
+  const stallTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     setInputUrl(src);
@@ -40,14 +55,22 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({ src, onUrlChange }) => {
     if (Hls.isSupported()) {
       const hls = new Hls({
         enableWorker: true,
-        lowLatencyMode: true,
-        backBufferLength: 90,
+        lowLatencyMode: lowLatency,
+        maxBufferLength: lowLatency ? 10 : 30, // 30s buffer cushion in smooth mode
+        maxMaxBufferLength: lowLatency ? 20 : 60,
+        maxBufferSize: 60 * 1024 * 1024, // 60MB max buffer size
+        liveSyncDurationCount: lowLatency ? 2 : 3, // 3 segments (~6-10s) to absorb network jitter completely
+        liveMaxLatencyDurationCount: lowLatency ? 5 : 10,
+        highBufferWatchdogPeriod: 2,
         manifestLoadingTimeOut: 15000,
         manifestLoadingMaxRetry: 4,
         levelLoadingTimeOut: 15000,
         levelLoadingMaxRetry: 4,
         fragLoadingTimeOut: 20000,
         fragLoadingMaxRetry: 6,
+        fragLoadingRetryDelay: 1000,
+        abrEmaFastLive: 3,
+        abrEmaSlowLive: 9,
         xhrSetup: (xhr) => {
           xhr.withCredentials = false;
         }
@@ -61,9 +84,23 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({ src, onUrlChange }) => {
       hls.loadSource(streamToLoad);
       hls.attachMedia(video);
 
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+      hls.on(Hls.Events.MANIFEST_PARSED, (_event, data) => {
         setIsLoading(false);
         setError(null);
+
+        // Parse available quality levels
+        if (data.levels && data.levels.length > 0) {
+          const parsedLevels: QualityLevel[] = data.levels.map((lvl, index) => ({
+            id: index,
+            height: lvl.height || 0,
+            bitrate: lvl.bitrate || 0,
+            name: lvl.height ? `${lvl.height}p` : `Level ${index + 1}`
+          }));
+          setLevels(parsedLevels);
+        } else {
+          setLevels([]);
+        }
+
         video.play().catch((e) => {
           console.log("Autoplay prevented:", e);
         });
@@ -99,6 +136,10 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({ src, onUrlChange }) => {
               hls.destroy();
               break;
           }
+        } else if (data.details === Hls.ErrorDetails.BUFFER_STALLED_ERROR) {
+          // Non-fatal buffer stall recovery
+          console.warn("Buffer stall detected, recovering load...");
+          hls.startLoad();
         }
       });
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
@@ -126,8 +167,19 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({ src, onUrlChange }) => {
         hlsRef.current.destroy();
         hlsRef.current = null;
       }
+      if (stallTimerRef.current) {
+        clearTimeout(stallTimerRef.current);
+      }
     };
-  }, [src, useProxy, retryCount]);
+  }, [src, useProxy, lowLatency, retryCount]);
+
+  // Handle Quality Level Change
+  const handleQualityChange = (levelId: number) => {
+    setSelectedLevel(levelId);
+    if (hlsRef.current) {
+      hlsRef.current.currentLevel = levelId;
+    }
+  };
 
   const handleManualRetry = () => {
     setRetryCount(prev => prev + 1);
@@ -142,7 +194,7 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({ src, onUrlChange }) => {
   };
 
   return (
-    <div className="w-full bg-black relative group overflow-hidden">
+    <div className="w-full bg-black relative group overflow-hidden select-none">
       <div className="relative aspect-video bg-black shadow-2xl flex items-center justify-center">
         <video
           ref={videoRef}
@@ -151,13 +203,26 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({ src, onUrlChange }) => {
           muted
           autoPlay
           playsInline
+          onWaiting={() => {
+            // Auto stall recovery nudge
+            if (stallTimerRef.current) clearTimeout(stallTimerRef.current);
+            stallTimerRef.current = setTimeout(() => {
+              if (hlsRef.current) {
+                console.log("Nudging playback to resolve buffer waiting lag...");
+                hlsRef.current.startLoad();
+              }
+            }, 2500);
+          }}
+          onPlaying={() => {
+            if (stallTimerRef.current) clearTimeout(stallTimerRef.current);
+          }}
         />
 
         {/* Loading Spinner */}
         {isLoading && !error && (
-          <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center gap-3 z-20">
+          <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center gap-3 z-20 pointer-events-none">
             <div className="w-10 h-10 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin"></div>
-            <p className="text-xs font-bold uppercase tracking-widest text-zinc-400">Connecting HLS Stream...</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-zinc-400">Optimizing Stream Buffer...</p>
           </div>
         )}
 
@@ -216,17 +281,104 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({ src, onUrlChange }) => {
           </div>
         )}
 
-        {/* Quality Overlay Header */}
+        {/* Header Overlay Controls */}
         {!error && (
-          <div className="absolute top-4 left-4 pointer-events-none z-30 flex items-center gap-2">
-            <div className="bg-red-600 px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider text-white flex items-center gap-1 shadow-lg">
-              <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
-              Live Feed
+          <div className="absolute top-3 left-3 right-3 z-30 flex items-center justify-between opacity-90 group-hover:opacity-100 transition-opacity pointer-events-none">
+            <div className="flex items-center gap-2 pointer-events-auto">
+              <div className="bg-red-600 px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider text-white flex items-center gap-1 shadow-lg">
+                <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
+                Live
+              </div>
+              <div className="bg-black/70 backdrop-blur-md px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider text-zinc-200 flex items-center gap-1 border border-white/10">
+                <span>HLS Stream</span>
+                {useProxy && <span className="text-purple-400 text-[9px] font-mono">(Proxy)</span>}
+              </div>
             </div>
-            <div className="bg-black/60 backdrop-blur-md px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider text-white flex items-center gap-1">
-              <span>HLS Master</span>
-              {useProxy && <span className="text-purple-400 text-[9px]">(Proxy)</span>}
+
+            {/* Performance & Quality Toolbar */}
+            <div className="flex items-center gap-2 pointer-events-auto">
+              <button
+                onClick={() => setLowLatency(!lowLatency)}
+                title={lowLatency ? "Low Latency (Fast, may stutter)" : "Smooth Mode (6s Buffer Cushion, Zero Stutter)"}
+                className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider backdrop-blur-md transition-all flex items-center gap-1.5 border ${
+                  lowLatency 
+                    ? 'bg-amber-500/20 border-amber-500/40 text-amber-300' 
+                    : 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
+                }`}
+              >
+                <i className={`fa-solid ${lowLatency ? 'fa-bolt' : 'fa-gauge-high'}`}></i>
+                <span>{lowLatency ? 'Low-Latency' : 'Smooth Buffer'}</span>
+              </button>
+
+              <button
+                onClick={() => setShowSettings(!showSettings)}
+                className="bg-black/70 hover:bg-black/90 backdrop-blur-md border border-white/10 text-white p-1.5 rounded transition-colors text-xs"
+                title="Playback Settings"
+              >
+                <i className="fa-solid fa-sliders"></i>
+              </button>
             </div>
+          </div>
+        )}
+
+        {/* Quality & Settings Dropdown */}
+        {showSettings && !error && (
+          <div className="absolute top-12 right-3 z-40 bg-zinc-900/95 border border-white/10 backdrop-blur-md rounded-lg p-3 w-56 text-xs text-zinc-200 shadow-2xl flex flex-col gap-3">
+            <div className="flex items-center justify-between border-b border-white/10 pb-2">
+              <span className="font-bold uppercase text-[10px] text-zinc-400 tracking-wider">Playback Optimization</span>
+              <button onClick={() => setShowSettings(false)} className="text-zinc-500 hover:text-white">
+                <i className="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+
+            {/* Quality Selector */}
+            {levels.length > 0 && (
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-bold text-zinc-400 uppercase">Resolution Quality</label>
+                <select
+                  value={selectedLevel}
+                  onChange={(e) => handleQualityChange(Number(e.target.value))}
+                  className="bg-black/60 border border-white/10 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-purple-500"
+                >
+                  <option value={-1}>Auto (Adaptive)</option>
+                  {levels.map((lvl) => (
+                    <option key={lvl.id} value={lvl.id}>
+                      {lvl.name} {lvl.bitrate ? `(${Math.round(lvl.bitrate / 1000)} kbps)` : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Mode Controls */}
+            <div className="flex flex-col gap-2 pt-1 border-t border-white/5">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-zinc-300">Buffer Mode</span>
+                <button
+                  onClick={() => setLowLatency(!lowLatency)}
+                  className="text-[10px] font-bold uppercase text-purple-400 hover:underline"
+                >
+                  {lowLatency ? 'Low Latency' : 'Smooth (6s)'}
+                </button>
+              </div>
+
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-zinc-300">CORS Proxy</span>
+                <button
+                  onClick={() => setUseProxy(!useProxy)}
+                  className="text-[10px] font-bold uppercase text-purple-400 hover:underline"
+                >
+                  {useProxy ? 'Enabled' : 'Disabled'}
+                </button>
+              </div>
+            </div>
+
+            <button
+              onClick={handleManualRetry}
+              className="mt-1 w-full bg-purple-600 hover:bg-purple-500 text-white py-1 rounded text-xs font-bold uppercase tracking-wider text-center"
+            >
+              Re-Sync Stream
+            </button>
           </div>
         )}
       </div>
@@ -235,4 +387,5 @@ const HlsPlayer: React.FC<HlsPlayerProps> = ({ src, onUrlChange }) => {
 };
 
 export default HlsPlayer;
+
 

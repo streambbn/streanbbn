@@ -79,11 +79,13 @@ async function startServer() {
         });
 
         res.setHeader("Content-Type", "application/vnd.apple.mpegurl");
+        res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
         res.send(rewrittenLines.join("\n"));
       } else {
         if (contentType) {
           res.setHeader("Content-Type", contentType);
         }
+        res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
         const arrayBuffer = await response.arrayBuffer();
         res.send(Buffer.from(arrayBuffer));
       }
